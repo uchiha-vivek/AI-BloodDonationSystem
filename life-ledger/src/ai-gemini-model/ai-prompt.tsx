@@ -1,0 +1,1 @@
+export const GENERATIVE_AI_PROMPT = 'Find nearby blood bank centers for the location: {LOCATION}. Provide details including the name, address, and contact information of the blood banks. Format the response in JSON with the following fields: Name, Address, Contact Information.';
