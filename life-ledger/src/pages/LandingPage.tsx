@@ -24,7 +24,7 @@ const LandingPage: FC = () => {
       {/* Content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4 text-center z-20">
         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
-          AI`` Powered Blood Donation
+          AI Powered Blood Donation
         </h1>
         <p className="text-lg sm:text-xl md:text-2xl font-semibold mt-5">
           Solution you can trust!
