@@ -17,7 +17,7 @@ const ChatBot: React.FC = () => {
 
   // Initialize your Gemini API
   const genAI = new GoogleGenerativeAI(
-    "AIzaSyCLfhxa3ehlfch312WQDyElJOPS4nrRIc0"
+    ""
   );
   const model: GenerativeModel = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
