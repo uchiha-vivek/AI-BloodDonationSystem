@@ -1,6 +1,8 @@
 import React, { FC, useState } from 'react';
-import axios from 'axios';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import Header from '../components/Header'; // Import the Header component
+import Footer from '../components/Footer'; // Import the Footer component
+import { FaSpinner } from 'react-icons/fa'; // Import a spinner icon from react-icons
 
 // Define the type for the blood bank information
 interface BloodBank {
@@ -23,6 +25,7 @@ const CreateBloodDonationCenter: FC = () => {
   const [location, setLocation] = useState<string>(''); // State to hold the input location
   const [bloodBanks, setBloodBanks] = useState<BloodBank[]>([]); // State to hold blood bank centers
   const [error, setError] = useState<string | null>(null); // State to handle error messages
+  const [isLoading, setIsLoading] = useState<boolean>(false); // State to manage loading state
 
   // Function to fetch blood bank centers from Gemini API
   const fetchBloodBankCenters = async () => {
@@ -30,6 +33,9 @@ const CreateBloodDonationCenter: FC = () => {
       setError('Please enter a location.');
       return;
     }
+
+    setIsLoading(true); // Set loading state to true when fetching starts
+    setError(null); // Clear any previous errors
 
     try {
       // Request Gemini AI for blood bank information
@@ -72,6 +78,8 @@ const CreateBloodDonationCenter: FC = () => {
     } catch (error) {
       console.error('Error fetching blood bank centers:', error);
       setError('Error fetching blood bank centers. Please try again.');
+    } finally {
+      setIsLoading(false); // Set loading state to false when fetching completes
     }
   };
 
@@ -81,44 +89,58 @@ const CreateBloodDonationCenter: FC = () => {
   };
 
   return (
-    <div className="sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10">
-      <h2 className="text-2xl font-bold mb-4">Find Blood Donation Centers</h2>
-      <div className="mb-6">
-        <input
-          type="text"
-          value={location}
-          onChange={handleInputChange}
-          placeholder="Enter your location..."
-          className="border p-2 rounded w-full"
-        />
-        <button
-          onClick={fetchBloodBankCenters}
-          className="mt-2 bg-blue-500 text-white p-2 rounded"
-        >
-          Search Blood Banks
-        </button>
-      </div>
+    <div className="flex flex-col min-h-screen">
+      {/* Header */}
+      <Header />
 
-      {/* Display Blood Bank Centers */}
-      <div className="mt-6">
-        {error && <p className="text-red-500">{error}</p>}
-        {bloodBanks.length > 0 ? (
-          <div>
-            <h3 className="text-xl font-bold mb-4">Nearby Blood Bank Centers:</h3>
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {bloodBanks.map((bank, index) => (
-                <div key={index} className="border p-4 rounded shadow hover:shadow-lg transition">
-                  <h4 className="text-lg font-semibold">{bank.name}</h4>
-                  <p className="text-gray-700"><strong>Address:</strong> {bank.address}</p>
-                  <p className="text-gray-700"><strong>Contact:</strong> {bank.contact}</p>
-                </div>
-              ))}
+      {/* Main Content */}
+      <main className="flex-grow sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10">
+        <h2 className="text-2xl font-bold mb-4 text-center mt-20 ">Find Blood Donation Centers</h2>
+        <div className="flex flex-col items-center mb-6">
+          <input
+            type="text"
+            value={location}
+            onChange={handleInputChange}
+            placeholder="Enter your location..."
+            className="border p-2 rounded w-full max-w-md mb-4" // Centered input with max width
+          />
+          <button
+            onClick={fetchBloodBankCenters}
+            className={`px-4 py-2 border-2 border-white text-white rounded-lg transition-colors duration-200 
+              ${isLoading ? 'bg-gray-500 cursor-not-allowed' : 'bg-transparent hover:bg-white hover:text-black'}`}
+            disabled={isLoading} // Disable button when loading
+          >
+            {isLoading ? 'Searching...' : 'Search Blood Banks'} {/* Show loader text */}
+          </button>
+
+          {/* Loader icon */}
+          {isLoading && <FaSpinner className="text-2xl text-red-500 animate-spin mt-4" />} {/* Loader icon below button */}
+        </div>
+
+        {/* Display Blood Bank Centers */}
+        <div className="mt-6">
+          {error && <p className="text-red-500">{error}</p>}
+          {bloodBanks.length > 0 ? (
+            <div>
+              <h3 className="text-xl font-bold mb-4 text-center">Nearby Blood Bank Centers:</h3>
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {bloodBanks.map((bank, index) => (
+                  <div key={index} className="border p-4 rounded shadow hover:shadow-lg transition">
+                    <h4 className="text-lg font-semibold">{bank.name}</h4>
+                    <p className="text-gray-700"><strong>Address:</strong> {bank.address}</p>
+                    <p className="text-gray-700"><strong>Contact:</strong> {bank.contact}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ) : (
-          location && !error && <p>No blood bank centers found near {location}.</p>
-        )}
-      </div>
+          ) : (
+            location && !error && !isLoading && <p className="text-center"> {location}</p>
+          )}
+        </div>
+      </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
