@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS   
 import pickle
 import numpy as np
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)  
 
 # Load your trained model
 with open('xgb_model.pkl', 'rb') as file:
@@ -20,17 +20,24 @@ def predict():
         monetary = data['monetary']
         time = data['time']
         
-        # Create an input array for the model
+         
         input_data = np.array([[recency, frequency, monetary, time]])
         
-        # Make a prediction
+        
         prediction = xgb_model.predict(input_data)
+
         
-        # Convert prediction to a Python list and then to a basic type (int, float)
-        prediction_value = prediction[0].item()  # Extracts the scalar value
+       
+        prediction_value = prediction[0].item()  
         
-        # Return a JSON response
-        return jsonify({"prediction": prediction_value})
+       
+        if prediction_value == 1:
+            message = "Will donate blood"
+        else:
+            message = "Not going to donate blood"
+        
+        
+        return jsonify({"prediction": prediction_value, "message": message})
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
